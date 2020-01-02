@@ -1055,21 +1055,29 @@ public class TimeSeries extends Series implements Cloneable, Serializable {
         }
         TimeSeries copy = (TimeSeries) super.clone();
         copy.data = new java.util.ArrayList();
-        copy.minY = Double.NaN;
-        copy.maxY = Double.NaN;
         if (this.data.size() > 0) {
             for (int index = start; index <= end; index++) {
                 TimeSeriesDataItem item
                         = (TimeSeriesDataItem) this.data.get(index);
                 TimeSeriesDataItem clone = (TimeSeriesDataItem) item.clone();
+                
                 try {
                     copy.add(clone);
+                    if(index==start) {
+                		copy.minY= clone.getValue().doubleValue();
+                        copy.maxY= clone.getValue().doubleValue();
+                	}else {
+                		copy.minY= minIgnoreNaN(copy.minY,clone.getValue().doubleValue());
+                        copy.maxY= maxIgnoreNaN(copy.maxY,clone.getValue().doubleValue());
+                	}
+                    
                 }
                 catch (SeriesException e) {
                     e.printStackTrace();
                 }
             }
         }
+        
         return copy;
     }
 
